@@ -11,7 +11,7 @@ import os
 class CollaborativeFiltering:
     def __init__(self, dataset='random'):
         start_time = time.time()
-        print "Initializing Collaborative Filtering"
+        print ("Initializing Collaborative Filtering")
         training_filepath = 'matrices/{}_training.npz'.format(dataset)
         testing_filepath = 'matrices/{}_test.npz'.format(dataset)
         centered_training_filepath = 'matrices/{}_centered_training.npz'.format(dataset)
@@ -28,26 +28,26 @@ class CollaborativeFiltering:
                                                                                 self.training_matrix_csr)
         self.relative_user_rating = self.calculate_mean_relative_user_rating(self.baseline_rating, self.training_matrix_csc)
         if not os.path.isfile(centered_training_filepath):
-            print "Running Center Matrix"
+            print ("Running Center Matrix")
             tick = time.time()
             center_matrix(self.training_matrix_coo,centered_training_filepath,self.relative_movie_average)
-            print "Center Matrix done in {} seconds".format(time.time()-tick)
+            print ("Center Matrix done in {} seconds".format(time.time()-tick))
         if os.path.isfile(similarity_filepath):
-            print "Loading Similarity Matrix"
+            print ("Loading Similarity Matrix")
             tick = time.time()
             self.cosine_similarity_csr = sparse.load_npz(similarity_filepath)
-            print "Load Similarity Matrix done in {} seconds".format(time.time() - tick)
+            print ("Load Similarity Matrix done in {} seconds".format(time.time() - tick))
         else:
-            print "Building Similarity Matrix"
+            print ("Building Similarity Matrix")
             tick = time.time()
             self.cosine_similarity_csr=self.fill_similarity_matrix(centered_training_filepath,similarity_filepath)
-            print "Building Similarity Matrix done in {} seconds".format(time.time() - tick)
-        print "Class initialization done in {} seconds".format(time.time()-start_time)
+            print ("Building Similarity Matrix done in {} seconds".format(time.time() - tick))
+        print ("Class initialization done in {} seconds".format(time.time()-start_time))
 
     def calculate_baseline_estimate(self, movie_ratings, user_ratings, global_movie_mean, coo_matrix):
         baseline_estimate_rating = {}
         # Loop through each entry in the test dataset
-        for movie, user, true_rating in itertools.izip(coo_matrix.row, coo_matrix.col,
+        for movie, user, true_rating in zip(coo_matrix.row, coo_matrix.col,
                                                        coo_matrix.data):
             # Get the baseline rating for this movie in the test set
             movie_baseline = movie_ratings[movie]
@@ -65,7 +65,7 @@ class CollaborativeFiltering:
         movie_rating_counts = csr_matrix.getnnz(axis=1)
         # Loop through each movie
         number_of_movies = csr_matrix.shape[0]
-        for index in xrange(1, number_of_movies):
+        for index in range(1, number_of_movies):
             # Check to see if the movie has not been rated
             if movie_sums[index] != 0:
 
@@ -78,7 +78,7 @@ class CollaborativeFiltering:
     # COO sparse matrix
     def calculate_global_baseline_rating(self,coo_matrix):
         summed_movie_rating = 0
-        for i, j, v in itertools.izip(coo_matrix.row, coo_matrix.col, coo_matrix.data):
+        for i, j, v in zip(coo_matrix.row, coo_matrix.col, coo_matrix.data):
             summed_movie_rating = summed_movie_rating + v
         number_of_ratings = coo_matrix.nnz
         mean_movie_rating = float(summed_movie_rating) / number_of_ratings
@@ -95,7 +95,7 @@ class CollaborativeFiltering:
         user_rating_counts = csc_matrix.getnnz(axis=0)
         # Loop through each user
         number_of_users = self.training_matrix_csc.shape[1]
-        for index in xrange(1, number_of_users):
+        for index in range(1, number_of_users):
             # Check to see if the user has not been rated
             if user_sums[index] != 0:
                 user_average = float(user_sums[index]) / user_rating_counts[index]
@@ -118,15 +118,15 @@ class CollaborativeFiltering:
 
 
     def collab_RMSE(self):
-        print "Collaborative Filter RMSE"
+        print ("Collaborative Filter RMSE")
         summed_error = 0
         count = 0
         # Loop through each entry in the test dataset
         # Anime dataset has about 2 million test samples
-        for movie, user, true_rating in itertools.izip(self.test_matrix_coo.row, self.test_matrix_coo.col, self.test_matrix_coo.data):
+        for movie, user, true_rating in zip(self.test_matrix_coo.row, self.test_matrix_coo.col, self.test_matrix_coo.data):
             count = count + 1
             if count % 1000 == 0:
-                print "Current Cycle: {} \nTime for last 1000 cycles: {}".format(count,time.time()-tick)
+                print ("Current Cycle: {} \nTime for last 1000 cycles: {}".format(count,time.time()-tick))
             if count % 1000 == 1:
                 tick = time.time()
             tock = time.time()
@@ -153,7 +153,7 @@ class CollaborativeFiltering:
         weighted_rating = 0
         # Use len of itemlist since it may contain fewer than expected elements
         # Depends on how many movies the user has rated
-        for ix in xrange(len(item_list)):
+        for ix in range(len(item_list)):
             movie = item_list[ix]
             bxj = globalmean + self.relative_user_rating[user] + self.relative_movie_average[movie]
             rxj = self.training_matrix_csr[movie, user]
@@ -167,8 +167,8 @@ class CollaborativeFiltering:
     def collaborative_filter(self):
         tick = time.time()
         RMSE = self.collab_RMSE()
-        print "Item-Item Collaborative Filtering RMSE: {}".format(RMSE)
-        print "Elapsed Time: {}".format(time.time() - tick)
+        print ("Item-Item Collaborative Filtering RMSE: {}".format(RMSE))
+        print ("Elapsed Time: {}".format(time.time() - tick))
         return None
 
     def select_nearest(self,reference_movie,user, k=5):
@@ -191,14 +191,14 @@ class CollaborativeFiltering:
 if __name__ == '__main__':
     # This should not take more time than a minute or two
     start_time = time.time()
-    print "Running Collaborative Filtering on Random Dataset"
+    print ("Running Collaborative Filtering on Random Dataset")
     recommender = CollaborativeFiltering()
 
     # This took two hours to run on a 4 GHz i7e six core processor with 16 GB ram on an SSD
     recommender.collaborative_filter()
-    print "Collaborative Filter on Random Dataset done in {} seconds".format(time.time() - start_time)
+    print ("Collaborative Filter on Random Dataset done in {} seconds".format(time.time() - start_time))
     start_time = time.time()
-    print "Running Collaborative Filtering on Arbitrary Dataset"
+    print ("Running Collaborative Filtering on Arbitrary Dataset")
     recommender_arbitary = CollaborativeFiltering(dataset='arbitrary')
     recommender_arbitary.collaborative_filter()
-    print "Collaborative Filter on Arbitrary Dataset done in  {} seconds".format(time.time() - start_time)
+    print ("Collaborative Filter on Arbitrary Dataset done in  {} seconds".format(time.time() - start_time))

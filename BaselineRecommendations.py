@@ -30,7 +30,7 @@ class BaselineRecommendations:
         summed_error = 0
 
         # Loop through each entry in the test dataset
-        for movie, user, true_rating in itertools.izip(self.test_matrix_coo.row, self.test_matrix_coo.col,
+        for movie, user, true_rating in zip(self.test_matrix_coo.row, self.test_matrix_coo.col,
                                                        self.test_matrix_coo.data):
             # Get the baseline rating for this movie in the test set
             movie_baseline = self.movie_centered[movie]
@@ -59,7 +59,7 @@ class BaselineRecommendations:
 
     def calculate_global_baseline_rating(self):
         summed_movie_rating = 0
-        for i, j, v in itertools.izip(self.training_matrix_coo.row, self.training_matrix_coo.col,
+        for i, j, v in zip(self.training_matrix_coo.row, self.training_matrix_coo.col,
                                       self.training_matrix_coo.data):
             summed_movie_rating = summed_movie_rating + v
 
@@ -75,7 +75,7 @@ class BaselineRecommendations:
 
         # Loop through each movie
         number_of_movies = self.training_matrix_csr.shape[0]
-        for index in xrange(1, number_of_movies):
+        for index in range(1, number_of_movies):
             # Check to see if the movie has not been rated
             if movie_sums[index] != 0:
                 movie_average = float(movie_sums[index]) / movie_rating_counts[index]
@@ -94,7 +94,7 @@ class BaselineRecommendations:
 
         # Loop through each user
         number_of_users = self.training_matrix_csc.shape[1]
-        for index in xrange(1, number_of_users):
+        for index in range(1, number_of_users):
             # Check to see if the user has not rated
             if user_sums[index] != 0:
                 user_average = float(user_sums[index]) / user_rating_counts[index]
@@ -107,36 +107,36 @@ class BaselineRecommendations:
         start = time.time()
         self.calculate_global_baseline_rating()
         end = time.time()
-        print "Time to calculate global movie mean: " + str((end - start))
+        print ("Time to calculate global movie mean: " + str((end - start)))
 
         start = time.time()
         self.calculate_relative_mean_movie_rating()
         end = time.time()
-        print "Time to calculate mean movie ratings: " + str((end - start))
+        print ("Time to calculate mean movie ratings: " + str((end - start)))
 
         start = time.time()
         self.calculate_mean_user_rating()
 
         end = time.time()
-        print "Time to calculate mean user ratings: " + str((end - start))
+        print ("Time to calculate mean user ratings: " + str((end - start)))
 
         start = time.time()
         rmse = self.calculate_baseline_RMSE()
         end = time.time()
-        print "Time to calculate RMSE: " + str((end - start))
+        print ("Time to calculate RMSE: " + str((end - start)))
 
         return rmse
 
     def run_baseline(self):
         self.training_matrix_csc, self.training_matrix_csr = convert_coo_to_csc_and_csr(self.training_matrix_coo)
         self.test_matrix_csc, self.test_matrix_csr = convert_coo_to_csc_and_csr(self.test_matrix_coo)
-        print "Finished converting to csc and csr"
+        print ("Finished converting to csc and csr")
         rmse = self.calculate_baseline_error()
-        print "RMSE Baseline: " + str(rmse)
+        print ("RMSE Baseline: " + str(rmse))
 
 if __name__ == '__main__':
     start_time = time.time()
-    print "Running Baseline Estimate on Random Dataset"
+    print ("Running Baseline Estimate on Random Dataset")
 
     dataset = 'random'
     random_training_filepath = 'matrices/{}_training.npz'.format(dataset)
@@ -148,11 +148,11 @@ if __name__ == '__main__':
     random_baseline = BaselineRecommendations(random_training,random_test)
     random_baseline.run_baseline()
 
-    print "Baseline Estimate on Random Dataset done in {} seconds".format(time.time() - start_time)
+    print ("Baseline Estimate on Random Dataset done in {} seconds".format(time.time() - start_time))
 
     start_time = time.time()
-    print "Running Baseline Estimate on Arbitrary Dataset"
-
+    print ("Running Baseline Estimate on Arbitrary Dataset"
+)
     dataset = 'arbitrary'
     arbitrary_training_filepath = 'matrices/{}_training.npz'.format(dataset)
     arbitrary_testing_filepath = 'matrices/{}_test.npz'.format(dataset)
@@ -163,4 +163,4 @@ if __name__ == '__main__':
     arbitrary_baseline = BaselineRecommendations(arbitrary_training, arbitrary_test)
     arbitrary_baseline.run_baseline()
 
-    print "Baseline Estimate on Random Dataset done in {} seconds".format(time.time() - start_time)
+    print ("Baseline Estimate on Random Dataset done in {} seconds".format(time.time() - start_time))

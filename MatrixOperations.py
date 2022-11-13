@@ -13,7 +13,7 @@ def center_matrix(sparse_matrix, file_name, movie_average):
     users = np.zeros((num_ratings))
 
     # Create vectors of centered ratings
-    for movie, user, rating in itertools.izip(sparse_matrix.row, sparse_matrix.col, sparse_matrix.data):
+    for movie, user, rating in zip(sparse_matrix.row, sparse_matrix.col, sparse_matrix.data):
         movies[ix] = movie
         users[ix] = user
         ratings[ix] = rating - movie_average[movie]
@@ -33,7 +33,7 @@ def center_matrix_user(sparse_matrix, user_average):
     users = np.zeros((num_ratings))
 
     # Create vectors of centered ratings
-    for movie, user, rating in itertools.izip(sparse_matrix.row, sparse_matrix.col, sparse_matrix.data):
+    for movie, user, rating in zip(sparse_matrix.row, sparse_matrix.col, sparse_matrix.data):
         movies[ix] = movie
         users[ix] = user
         ratings[ix] = rating - user_average[user]

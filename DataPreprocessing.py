@@ -11,7 +11,7 @@ import os
 class DataPreprocessing:
     def __init__(self):
         start_time = time.time()
-        print "Initializing Data Preprocessing"
+        print( "Initializing Data Preprocessing")
         self.arbitrary_training_filepath = 'csv/arbitrary_training.csv'
         self.arbitrary_testing_filepath = 'csv/arbitrary_test.csv'
         self.random_training_filepath = 'csv/random_training.csv'
@@ -22,40 +22,41 @@ class DataPreprocessing:
         self.npz_path = 'matrices/'
 
         if not os.path.isdir('csv/'):
-            print "Ensure that there exists the csv folder in current working directory"
+            print ("Ensure that there exists the csv folder in current working directory")
             exit(1)
         if not os.path.isfile(self.movie_filepath):
-            print "Ensure anime.csv is in the csv/ folder in current working directory"
+            print ("Ensure anime.csv is in the csv/ folder in current working directory")
             exit(1)
         if not os.path.isfile(self.rating_filepath):
-            print "Ensure rating.csv is in the csv/ folder in current working directory"
+            print ("Ensure rating.csv is in the csv/ folder in current working directory")
             exit(1)
         if not os.path.isdir(self.npz_path):
             os.mkdir(self.npz_path)
         if not os.path.isfile(self.remapped_filepath):
             tick = time.time()
-            print "Remapped data not found\nRemapping data"
+            print ("Remapped data not found\nRemapping data")
             #TODO add expected runtime
             self.remap_dataset(path_to_movies=self.movie_filepath, path_to_ratings=self.rating_filepath,
                                      target_filepath=self.remapped_filepath)
-            print "Data remapped in {} seconds".format(time.time()-tick)
+            print ("Data remapped in {} seconds".format(time.time()-tick))
 
         if os.path.isfile(self.remapped_filepath):
             tick = time.time()
-            print "Loading remapped data"
+            print ("Loading remapped data")
+            print(self.remapped_filepath)
             self.rating_data = self.load_csv_as_nparray(self.remapped_filepath)
-            print "Remapped data loaded in {} seconds".format(time.time()-tick)
+            print ("Remapped data loaded in {} seconds".format(time.time()-tick))
         else:
-            print "Data not found\nTerminating"
+            print ("Data not found\nTerminating")
             exit(1)
-        print "Data Preprocessing initialization done in {} seconds".format(time.time()-start_time)
+        print ("Data Preprocessing initialization done in {} seconds".format(time.time()-start_time))
 
     def save_sparse_matrix(self, file_name, sparse_matrix):
         sparse.save_npz(file_name, sparse_matrix)
     def write_matrix_to_csv(self, user_col, movie_row, rating_data, file_name):
-        with open(file_name, 'wb') as file:
+        with open(file_name, 'w') as file:
             writer = csv.writer(file)
-            for ix in xrange(len(user_col)):
+            for ix in range(len(user_col)):
                 writer.writerow((user_col[ix], movie_row[ix], rating_data[ix]))
     # Input:
     # filepath: path to data to be sampled in .csv format
@@ -67,7 +68,7 @@ class DataPreprocessing:
         random.seed(seed)
         total_size = data.shape[0]
         test_size = int(total_size * (percent_test ))
-        test_list = random.sample(xrange(total_size),test_size)
+        test_list = random.sample(range(total_size),test_size)
         test_data = np.zeros((test_size, 3))
         test_index = 0
 
@@ -86,6 +87,7 @@ class DataPreprocessing:
         training_data, test_data = self.random_sample(rating_data)
 
         # Training data
+        print(type(training_data))
         training_user_col = training_data[:, 0]
         training_movie_row = training_data[:, 1]
         training_rating_data = training_data[:, 2]
@@ -109,16 +111,16 @@ class DataPreprocessing:
         sparse_user_size = max(rating_data[:, 0]) + 1
         sparse_movie_size = max(rating_data[:, 1]) + 1
 
-        print "Building Sparse Matrices"
+        print ("Building Sparse Matrices")
         training_matrix = sparse.coo_matrix((training_rating_data, (training_movie_row, training_user_col)),
                                             shape=(sparse_movie_size, sparse_user_size), dtype=np.float64)
         test_matrix = sparse.coo_matrix((test_rating_data, (test_movie_row, test_user_col)),
                                              shape=(sparse_movie_size,sparse_user_size),dtype=np.float64)
 
-        print "Saving Sparse Matrices"
+        print ("Saving Sparse Matrices")
         self.save_sparse_matrix(file_name=training_dst, sparse_matrix=training_matrix)
         self.save_sparse_matrix(file_name=testing_dst, sparse_matrix=test_matrix)
-        print "Done"
+        print ("Done")
 
 
     def arbitrary_split(self, rating_data, training_file_name, test_file_name):
@@ -151,16 +153,16 @@ class DataPreprocessing:
         sparse_movie_size = max(rating_data[:, 1])+1
 
         # Create the sparse matrices for the training and test data
-        print "Building Sparse Matrices"
+        print ("Building Sparse Matrices")
         training_matrix = sparse.coo_matrix((training_rating_data, (training_movie_row, training_user_col)),
                                                  shape=(sparse_movie_size, sparse_user_size), dtype=np.float64)
         test_matrix = sparse.coo_matrix((test_rating_data, (test_movie_row, test_user_col)),
                                              shape=(sparse_movie_size,sparse_user_size),dtype=np.float64)
 
-        print "Saving Sparse Matrices"
+        print ("Saving Sparse Matrices")
         self.save_sparse_matrix(file_name=training_dst, sparse_matrix=training_matrix)
         self.save_sparse_matrix(file_name=testing_dst, sparse_matrix=test_matrix)
-        print "Done"
+        print ("Done")
 
     def remap_dataset(self, path_to_movies, path_to_ratings, target_filepath):
         csv_delimeter = ','
@@ -179,7 +181,7 @@ class DataPreprocessing:
         # Remove any rows that have a rating of -1
         rating_data = rating_data[rating_data.rating != -1]
 
-        with open(target_filepath, "wb") as csv_file:
+        with open(target_filepath, "w") as csv_file:
             writer = csv.writer(csv_file, delimiter=',')
             writer.writerow(['user_id', 'anime_id', 'rating'])
             # Remap the movie rating file based on the new movie ID
@@ -188,7 +190,7 @@ class DataPreprocessing:
             for index, row in rating_data.iterrows():
                 count = count + 1
                 if count % 100000 == 0:
-                    print "Current Cycle: {} \nTime for last 100000 cycles: {}".format(count, time.time() - tick)
+                    print ("Current Cycle: {} \nTime for last 100000 cycles: {}".format(count, time.time() - tick))
                 if count % 100000 == 1:
                     tick = time.time()
                 # Check that the anime_id from the rating file exists as a movie in the movie file
@@ -200,17 +202,17 @@ class DataPreprocessing:
 
     def run_random_split(self):
         start_time = time.time()
-        print "Running random split"
+        print ("Running random split")
         self.random_split(rating_data=self.rating_data, training_file_name=self.random_training_filepath,
                           test_file_name=self.random_testing_filepath)
-        print "Random split finished in {} seconds".format(time.time() - start_time)
+        print ("Random split finished in {} seconds".format(time.time() - start_time))
 
     def run_arbitrary_split(self):
         start_time = time.time()
-        print "Running arbitrary split"
+        print ("Running arbitrary split")
         self.arbitrary_split(rating_data=self.rating_data, training_file_name=self.arbitrary_training_filepath,
                           test_file_name=self.arbitrary_testing_filepath)
-        print "Arbitrary split finished in {} seconds".format(time.time() - start_time)
+        print ("Arbitrary split finished in {} seconds".format(time.time() - start_time))
 
 
 if __name__ == '__main__':
@@ -219,4 +221,4 @@ if __name__ == '__main__':
     preprocess.run_arbitrary_split()
     preprocess.run_random_split()
     end = time.time()
-    print "Time to run program " + str((end - start_whole))
+    print ("Time to run program " + str((end - start_whole)))
