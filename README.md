@@ -10,8 +10,12 @@ This is an implementation of two popular recommendation techniques (collaborativ
 
 (3) Add the 'anime.csv' and 'rating.csv' files to the 'csv' folder
 
-(4) Run the 'RecommenderSystem.py' file and it will walk you through the process of running the program with
+(4) Start pipenv shell then run pipenv sync (or pipenv update)
+
+(5) Run the 'RecommenderSystem.py' file and it will walk you through the process of running the program with
 an interactive dialogue.
 
 # Note:
 This program was built to run with Python 2.7 in a Windows environment. In additions, we used the numpy, scipy and sklearn libraries.
+# Update:
+This program has been updated to use in Python 3.x, in pipenv environment provider. Do not remove Pipflie.lock
