@@ -1,0 +1,4 @@
+Learning rate: 0.006 
+Regularization rate: 0.06 
+Number of factors (k): 10 
+# of epochs: 15

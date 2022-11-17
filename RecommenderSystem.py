@@ -2,9 +2,14 @@ from LatentFactorModel import LatentFactorModel
 from BaselineRecommendations import BaselineRecommendations
 from DataPreprocessing import DataPreprocessing
 from CollaborativeFiltering import CollaborativeFiltering
+from datetime import datetime
 
 
 if __name__ == '__main__':
+    
+    f = open("Result.txt",'a+')
+    f.write("Test time:{}\n".format(datetime.now()))
+    
     print ("Welcome to the Anime Recommender System.")
 
     #***************Data Preprocessing***************
@@ -87,6 +92,9 @@ if __name__ == '__main__':
                 latent_model = LatentFactorModel(epochs=15, k=10, learning_rate=0.006, lambda_reg=0.06)
                 print ("Beginning the long training process...")
                 latent_model.run_new_model()
+                test_rmse = latent_model.calculate_test_rmse()
+                print ("Random split test RMSE is: " + str(test_rmse))
+                f.write("Random split test RMSE is: {}\n".format(test_rmse))
             elif parameters == 'no':
                 epochs = input("Enter the number of epochs to train for: ")
                 k = input("Enter the number of latent factors: ")
@@ -96,6 +104,9 @@ if __name__ == '__main__':
                 latent_model = LatentFactorModel(epochs=epochs, k=k, learning_rate=learning_rate, lambda_reg=lambda_reg)
                 print ("Beginning the long training process...")
                 latent_model.run_new_model()
+                test_rmse = latent_model.calculate_test_rmse()
+                print ("Random split test RMSE is: " + str(test_rmse))
+                f.write("Random split test RMSE is: {}\n".format(test_rmse))
         elif model_type == 'old':
             default_model = input("Do you want to load the default model? (yes or no)\nNote: it's recommended "
                                           "to load the default model. ")
@@ -109,14 +120,19 @@ if __name__ == '__main__':
                 print ("Calculating the random split test RMSE.")
                 test_rmse = latent_model.calculate_test_rmse()
                 print ("Random split test RMSE is: " + str(test_rmse))
+                print ("Random split test RMSE is: " + str(test_rmse))
+                f.write("Random split test RMSE is: {}\n".format(test_rmse))
             elif default_model == 'no':
                 directory = input("Enter the model directory (e.g. 'optimization/2017-11-23_16-28-35/'): ")
                 print ("Initializing the latent factor model.")
                 latent_model = LatentFactorModel(epochs=15, k=10, learning_rate=0.006, lambda_reg=0.06)
                 latent_model.load_model(model_directory=directory)
                 print ("Calculating the random split test RMSE.")
+                f.write("Latent result:\n")
                 test_rmse = latent_model.calculate_test_rmse()
                 print ("Random split test RMSE is: " + str(test_rmse))
+                f.write("Random split test RMSE is: {}\n".format(test_rmse))
+    f.close()
 
 
     # Uncomment only one dataset

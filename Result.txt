@@ -1,0 +1,12 @@
+Baseline result:
+RMSE Baseline: 1.2317984926212058
+Baseline result:
+RMSE Baseline: 1.425244891671987
+ColF result:
+Item-Item Collaborative Filtering RMSE: 1.1256351597597993
+Elapsed Time: 15681.614144325256
+ColF result:
+Item-Item Collaborative Filtering RMSE: 1.4252467582588528
+Elapsed Time: 940.531491279602
+Test time:2022-11-15 11:55:54.256525
+Test time:2022-11-15 20:37:09.619750

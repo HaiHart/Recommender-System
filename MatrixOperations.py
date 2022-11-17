@@ -1,5 +1,4 @@
 from scipy import sparse
-import itertools
 import numpy as np
 
 

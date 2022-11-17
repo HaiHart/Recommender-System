@@ -167,8 +167,12 @@ class CollaborativeFiltering:
     def collaborative_filter(self):
         tick = time.time()
         RMSE = self.collab_RMSE()
+        f = open("Result.txt",'a+')
         print ("Item-Item Collaborative Filtering RMSE: {}".format(RMSE))
         print ("Elapsed Time: {}".format(time.time() - tick))
+        f.write("ColF result:\n")
+        f.write("Item-Item Collaborative Filtering RMSE: {}\n".format(RMSE))
+        f.write("Elapsed Time: {}\n".format(time.time() - tick))
         return None
 
     def select_nearest(self,reference_movie,user, k=5):

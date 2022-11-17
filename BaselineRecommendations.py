@@ -1,5 +1,4 @@
 import math
-import itertools
 import time
 from MatrixOperations import convert_coo_to_csc_and_csr
 from scipy import sparse
@@ -133,6 +132,10 @@ class BaselineRecommendations:
         print ("Finished converting to csc and csr")
         rmse = self.calculate_baseline_error()
         print ("RMSE Baseline: " + str(rmse))
+        f = open("Result.txt",'a+')
+        f.write("Baseline result:\n")
+        f.write("RMSE Baseline: {}\n".format(rmse))
+        
 
 if __name__ == '__main__':
     start_time = time.time()
